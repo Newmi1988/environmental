@@ -1,13 +1,15 @@
 components:
   - name: postgres
     # prefix should be optional
-    prefix: "POSTGRES_"
+    prefix: "POSTGRES"
     values:
       - name: "PORT"
         value: 5333
+      - name: "SCHEME"
+        value: "TEST"
   - name: test
     values:
       - name: "VALUE_ONE"
         value: "ONE"
-mapping: []
+mappings: []
 
