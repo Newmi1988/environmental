@@ -7,15 +7,13 @@ mod config;
 #[derive(Debug, Serialize, Deserialize)]
 struct Mapping {
     path: PathBuf,
-    components: Vec<String>
+    components: Vec<String>,
 }
-
 
 fn main() {
     let config = config::load_config();
-    println!("{:?}",&config);
+    println!("{:?}", &config);
 
-    let config_env : Vec<String> = config.to_env(vec!["postgres".to_string(),"test".to_string()]);
+    let config_env: Vec<String> = config.to_env(vec!["postgres".to_string(), "test".to_string()]);
     println!("{:?}", &config_env)
-
 }
