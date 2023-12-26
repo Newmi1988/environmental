@@ -2,6 +2,7 @@ use crate::components::Component;
 use crate::Mapping;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
+use std::fs::read_to_string;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MentalConfig {
@@ -28,8 +29,10 @@ impl MentalConfig {
     }
 }
 
-pub fn load_config() -> MentalConfig {
-    let config_input = include_str!("../mental.yaml");
-    let config: MentalConfig = from_str(config_input).unwrap();
-    config
+use std::error::Error;
+
+pub fn load_config(config_file: &str) -> Result<MentalConfig, Box<dyn Error>> {
+    let config_input = read_to_string(config_file)?;
+    let config: MentalConfig = from_str(&config_input)?;
+    Ok(config)
 }
