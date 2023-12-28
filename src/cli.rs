@@ -1,7 +1,5 @@
 use inquire::error::InquireResult;
-use inquire::{InquireError,
-              MultiSelect,
-};
+use inquire::MultiSelect;
 use crate::util;
 
 fn format_multiline_list(options: Vec<String>, message : String) -> InquireResult<Vec<String>> {
