@@ -1,9 +1,7 @@
 use inquire::error::InquireResult;
-use inquire::{
-    formatter::MultiOptionFormatter, list_option::ListOption, validator::Validation, InquireError,
-    MultiSelect,
+use inquire::{InquireError,
+              MultiSelect,
 };
-use std::path::PathBuf;
 use crate::util;
 
 fn format_multiline_list(options: Vec<String>, message : String) -> InquireResult<Vec<String>> {

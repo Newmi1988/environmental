@@ -1,10 +1,14 @@
 use crate::components::Component;
 use crate::Mapping;
+use schemars::{schema_for, JsonSchema};
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
+use std::error::Error;
 use std::fs::read_to_string;
+use std::fs::File;
+use std::io::Write;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MentalConfig {
     components: Vec<Component>,
     mappings: Vec<Mapping>,
@@ -27,9 +31,15 @@ impl MentalConfig {
         }
         combined_values
     }
-}
 
-use std::error::Error;
+    pub(crate) fn create_schema(target: &str) -> std::io::Result<()> {
+        let schema = schema_for!(MentalConfig);
+        let formatted_schema = serde_json::to_string(&schema).expect("Error creating schema");
+        let mut file = File::create(target)?;
+        file.write_all(formatted_schema.as_bytes())?;
+        Ok(())
+    }
+}
 
 pub fn load_config(config_file: &str) -> Result<MentalConfig, Box<dyn Error>> {
     let config_input = read_to_string(config_file)?;

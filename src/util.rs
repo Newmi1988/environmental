@@ -9,7 +9,7 @@ pub(crate) fn folders(path: &Path) -> Result<Vec<PathBuf>, io::Error> {
         .collect())
 }
 
-pub(crate) fn list_folders(folder : &str ) -> Vec<PathBuf> {
+pub(crate) fn list_folders(folder: &str) -> Vec<PathBuf> {
     let parent_folder = match Path::new(folder).parent() {
         Some(path) => path,
         None => panic!("Problem getting parent directory"),
