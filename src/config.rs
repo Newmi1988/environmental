@@ -8,7 +8,6 @@ use std::fs::read_to_string;
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use clap::builder::Str;
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MentalConfig {
