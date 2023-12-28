@@ -10,7 +10,7 @@ fn format_multiline_list(options: Vec<String>, message : String) -> InquireResul
     ans
 }
 
-pub(crate) fn folder_multiselect(config_file_path : &str) -> Result<InquireResult<Vec<String>>, InquireError> {
+pub(crate) fn folder_multiselect(config_file_path : &str) -> InquireResult<Vec<String>> {
     let options = util::list_folders(config_file_path);
     let folders_as_string : Vec<String> = options
         .into_iter()
@@ -18,5 +18,5 @@ pub(crate) fn folder_multiselect(config_file_path : &str) -> Result<InquireResul
            f.into_os_string().into_string().ok()
         })
         .collect();
-    Ok(format_multiline_list(folders_as_string,"Select foldres:".to_string()))
+    Ok(format_multiline_list(folders_as_string,"Select folders:".to_string())?)
 }
