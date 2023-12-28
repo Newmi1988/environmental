@@ -7,6 +7,8 @@ use std::error::Error;
 use std::fs::read_to_string;
 use std::fs::File;
 use std::io::Write;
+use std::path::{Path, PathBuf};
+use clap::builder::Str;
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MentalConfig {
@@ -32,16 +34,24 @@ impl MentalConfig {
         combined_values
     }
 
-    pub(crate) fn create_schema(target: &str) -> std::io::Result<()> {
+    pub(crate) fn create_schema(target: &PathBuf) -> std::io::Result<()> {
         let schema = schema_for!(MentalConfig);
         let formatted_schema = serde_json::to_string(&schema).expect("Error creating schema");
         let mut file = File::create(target)?;
         file.write_all(formatted_schema.as_bytes())?;
         Ok(())
     }
+
+    pub(crate) fn list_components(&self) -> Vec<&String> {
+        let mut res: Vec<&String> = Vec::new();
+        for c in &self.components {
+            res.push(&c.name)
+        }
+        res
+    }
 }
 
-pub fn load_config(config_file: &str) -> Result<MentalConfig, Box<dyn Error>> {
+pub fn load_config(config_file: &&Path) -> Result<MentalConfig, Box<dyn Error>> {
     let config_input = read_to_string(config_file)?;
     let config: MentalConfig = from_str(&config_input)?;
     Ok(config)
