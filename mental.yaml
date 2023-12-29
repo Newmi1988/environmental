@@ -1,15 +1,20 @@
 components:
-  - name: postgres
-    # prefix should be optional
-    prefix: "POSTGRES"
-    values:
-      - name: "PORT"
-        value: 5333
-      - name: "SCHEME"
-        value: "TEST"
-  - name: test
-    values:
-      - name: "VALUE_ONE"
-        value: "ONE"
-mappings: []
-
+- name: postgres
+  prefix: POSTGRES
+  values:
+  - name: PORT
+    value: '5333'
+  - name: SCHEME
+    value: TEST
+- name: test
+  prefix: null
+  values:
+  - name: VALUE_ONE
+    value: ONE
+mappings:
+- path: ./target
+  components:
+  - postgres
+- path: ./.idea
+  components:
+  - postgres

@@ -15,23 +15,29 @@ struct Mapping {
     components: Vec<String>,
 }
 
-fn create_mapping(path: &Path, mental_config : &MentalConfig) -> Vec<Mapping> {
+fn create_mapping(path: &Path, mental_config: &MentalConfig) -> Vec<Mapping> {
     let selected_folders = match cli::folder_multiselect(path) {
         Ok(selection) => selection,
         Err(error) => panic!("Problem opening the file: {:?}", error),
     };
     println!("Selected folders {:?}", selected_folders);
 
-    let selected_components= match cli::module_multiselect(mental_config) {
-        Ok(selection) => selection,
-        Err(error) => panic!("Problem opening the file: {:?}", error),
-    };
-    
-    let mut mappings : Vec<Mapping> = Vec::new();
+    let mut mappings: Vec<Mapping> = Vec::new();
     for f in selected_folders {
+        let message = format!(
+            "Select components that shoudl be included in forlder '{}'. Components: ",
+            f
+        );
+        let selected_components = match cli::module_multiselect(mental_config, &message) {
+            Ok(selection) => selection,
+            Err(error) => panic!("Problem opening the file: {:?}", error),
+        };
         let mut pathbuff = PathBuf::new();
         pathbuff.push(f);
-        mappings.push(Mapping { path: pathbuff,components: selected_components.clone() });
+        mappings.push(Mapping {
+            path: pathbuff,
+            components: selected_components.clone(),
+        });
     }
     mappings
 }
@@ -50,7 +56,7 @@ fn main() {
     };
 
     // load the config
-    let mental_config = match config::load_config(&config_file) {
+    let mut mental_config = match config::MentalConfig::from_file(&config_file) {
         Ok(config) => config,
         Err(error) => panic!("Problem opening the file: {:?}", error),
     };
@@ -66,34 +72,34 @@ fn main() {
         Some(cli::Commands::List {}) => {
             let components = mental_config.list_components();
             println!("Existing components:");
-            for c in components{
+            for c in components {
                 println!("  {}", &c)
             }
         }
         Some(cli::Commands::Map { target }) => {
-           let target_path = match target {
-                None => {
-                    match config_file.parent() {
-                       Some(parent) => parent,
-                       None => panic!("Could not resolve folder")
-                    }
+            let target_path = match target {
+                None => match config_file.parent() {
+                    Some(parent) => parent,
+                    None => panic!("Could not resolve folder"),
                 },
-                Some(target_folder) => target_folder
-           };
-           println!("Target path {:?}", &target_path);
-           let mappings : Vec<Mapping> = create_mapping(target_path, &mental_config);
-           for m in mappings {
-                let config_env: Vec<String> =
-                    mental_config.to_env(m.components);
-                println!("Resulting env variables for folder: {:?}",&m.path);
-                for env_entry in config_env {
-                    println!("{}", env_entry);
-                }
-           }
+                Some(target_folder) => target_folder,
+            };
+            let mappings: Vec<Mapping> = create_mapping(target_path, &mental_config);
+            // for m in &mappings {
+            //      let config_env: Vec<String> =
+            //          mental_config.to_env(m.components);
+            //      println!("Resulting env variables for folder: {:?}",&m.path);
+            //      for env_entry in config_env {
+            //          println!("{}", env_entry);
+            //      }
+            // }
+            mental_config.mappings = mappings;
+            println!("{:?}", mental_config);
+            mental_config
+                .dump(&config_file.to_path_buf())
+                .expect("Error writing config")
         }
         None => {}
         _ => {}
     }
-
-
 }

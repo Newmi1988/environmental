@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MentalConfig {
     components: Vec<Component>,
-    mappings: Vec<Mapping>,
+    pub mappings: Vec<Mapping>,
 }
 
 impl MentalConfig {
@@ -48,10 +48,17 @@ impl MentalConfig {
         }
         res
     }
-}
 
-pub fn load_config(config_file: &&Path) -> Result<MentalConfig, Box<dyn Error>> {
-    let config_input = read_to_string(config_file)?;
-    let config: MentalConfig = from_str(&config_input)?;
-    Ok(config)
+    pub(crate) fn dump(&self, target: &PathBuf) -> std::io::Result<()> {
+        let mut file = File::create(target)?;
+        let config_as_string = serde_yaml::to_string(self).expect("Error writing config");
+        file.write_all(config_as_string.as_bytes());
+        Ok(())
+    }
+
+    pub fn from_file(config_file: &&Path) -> Result<MentalConfig, Box<dyn Error>> {
+        let config_input = read_to_string(config_file)?;
+        let config: MentalConfig = from_str(&config_input)?;
+        Ok(config)
+    }
 }

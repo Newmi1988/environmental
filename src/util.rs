@@ -12,10 +12,9 @@ pub(crate) fn folders(path: &Path) -> Result<Vec<PathBuf>, io::Error> {
 pub(crate) fn list_folders(folder: &Path) -> Vec<PathBuf> {
     match folders(folder) {
         Ok(mut folder_paths) => {
-            folder_paths.push(Path::new(folder)
-                .to_path_buf());
+            folder_paths.push(Path::new(folder).to_path_buf());
             folder_paths
-        },
+        }
         Err(error) => panic!("Problem opening the file: {:?}", error),
     }
 }

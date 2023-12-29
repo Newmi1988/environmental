@@ -1,8 +1,8 @@
-use crate::{util, config::MentalConfig};
+use crate::{config::MentalConfig, util};
+use clap::{Parser, Subcommand};
 use inquire::error::InquireResult;
 use inquire::MultiSelect;
 use std::path::{Path, PathBuf};
-use clap::{Parser, Subcommand};
 
 fn format_multiline_list(options: Vec<String>, message: &str) -> InquireResult<Vec<String>> {
     let ans = MultiSelect::new(message, options).prompt();
@@ -15,20 +15,16 @@ pub(crate) fn folder_multiselect(folder_path: &Path) -> InquireResult<Vec<String
         .into_iter()
         .filter_map(|f| f.into_os_string().into_string().ok())
         .collect();
-    format_multiline_list(
-        folders_as_string,
-        "Select folders:",
-    )
+    format_multiline_list(folders_as_string, "Select target folders:")
 }
 
-pub(crate) fn module_multiselect(mental_config : &MentalConfig) -> InquireResult<Vec<String>> {
+pub(crate) fn module_multiselect(
+    mental_config: &MentalConfig,
+    message: &str,
+) -> InquireResult<Vec<String>> {
     let components = mental_config.list_components();
-    format_multiline_list(
-        components,
-        "Select components that shoudl be included in folder",
-    )
+    format_multiline_list(components, message)
 }
-
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -54,9 +50,7 @@ pub(crate) enum Commands {
         list: bool,
     },
     /// Map components to targets
-    Map {
-        target: Option<PathBuf>
-    },
+    Map { target: Option<PathBuf> },
     /// Dump Schema
     Schema {
         /// Sets a custom config file
