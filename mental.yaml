@@ -12,9 +12,7 @@ components:
   - name: VALUE_ONE
     value: ONE
 mappings:
-- path: ./target
+- path: .
   components:
   - postgres
-- path: ./.idea
-  components:
-  - postgres
+  - test

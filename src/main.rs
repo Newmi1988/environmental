@@ -85,21 +85,22 @@ fn main() {
                 Some(target_folder) => target_folder,
             };
             let mappings: Vec<Mapping> = create_mapping(target_path, &mental_config);
-            // for m in &mappings {
-            //      let config_env: Vec<String> =
-            //          mental_config.to_env(m.components);
-            //      println!("Resulting env variables for folder: {:?}",&m.path);
-            //      for env_entry in config_env {
-            //          println!("{}", env_entry);
-            //      }
-            // }
             mental_config.mappings = mappings;
             println!("{:?}", mental_config);
             mental_config
                 .dump(&config_file.to_path_buf())
                 .expect("Error writing config")
         }
+        Some(cli::Commands::Apply { target }) => {
+            let target_paths = match target {
+                None => mental_config.list_mapping_targets(),
+                Some(target_folder) => vec![target_folder.to_owned()],
+            };
+
+            mental_config
+                .write_components_to_folder(target_paths)
+                .expect("Error")
+        }
         None => {}
-        _ => {}
     }
 }

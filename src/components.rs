@@ -9,7 +9,7 @@ struct KeyValue {
 
 impl KeyValue {
     fn to_env(&self) -> String {
-        format!(r#"{0}"="{1}""#, self.name, self.value)
+        format!(r#"{0}="{1}""#, self.name, self.value)
     }
 }
 
@@ -27,8 +27,10 @@ impl Component {
             None => "".to_string(),
         };
         let mut formatted_values: Vec<String> = Vec::new();
+        let component_comment = format!("# component {}", &self.name);
+        formatted_values.push(component_comment);
         for value in &self.values {
-            let value_with_prefix = format!(r#""{}{}"#, prefix_upper, value.to_env());
+            let value_with_prefix = format!(r#"{}{}"#, prefix_upper, value.to_env());
             formatted_values.push(value_with_prefix);
         }
         formatted_values

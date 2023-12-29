@@ -28,14 +28,11 @@ pub(crate) fn module_multiselect(
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
+#[command(arg_required_else_help = true)]
 pub(crate) struct Cli {
     /// Sets a custom config file
     #[arg(short, long, value_name = "FILE")]
     pub(crate) config: Option<PathBuf>,
-
-    /// Turn debugging information on
-    // #[arg(short, long, action = clap::ArgAction::Count)]
-    // debug: u8,
 
     #[command(subcommand)]
     pub(crate) command: Option<Commands>,
@@ -44,11 +41,7 @@ pub(crate) struct Cli {
 #[derive(Subcommand)]
 pub(crate) enum Commands {
     /// Sync to config to files
-    Sync {
-        /// lists test values
-        #[arg(short, long)]
-        list: bool,
-    },
+    Apply { target: Option<PathBuf> },
     /// Map components to targets
     Map { target: Option<PathBuf> },
     /// Dump Schema
