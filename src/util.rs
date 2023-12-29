@@ -21,9 +21,8 @@ pub(crate) fn list_folders(folder: &Path) -> Vec<PathBuf> {
         None => panic!("Problem getting parent directory"),
     };
 
-    let folders = match util::folders(parent_folder) {
+    match util::folders(parent_folder) {
         Ok(folder_paths) => folder_paths,
         Err(error) => panic!("Problem opening the file: {:?}", error),
-    };
-    folders
+    }
 }
