@@ -15,6 +15,27 @@ struct Mapping {
     components: Vec<String>,
 }
 
+fn create_mapping(config_file: &Path, mental_config : &MentalConfig) -> Vec<Mapping> {
+    let selected_folders = match cli::folder_multiselect(config_file) {
+        Ok(selection) => selection,
+        Err(error) => panic!("Problem opening the file: {:?}", error),
+    };
+    println!("Selected folders {:?}", selected_folders);
+
+    let selected_components= match cli::module_multiselect(mental_config) {
+        Ok(selection) => selection,
+        Err(error) => panic!("Problem opening the file: {:?}", error),
+    };
+    
+    let mut mappings : Vec<Mapping> = Vec::new();
+    for f in selected_folders {
+        let mut pathbuff = PathBuf::new();
+        pathbuff.push(f);
+        mappings.push(Mapping { path: pathbuff,components: selected_components.clone() });
+    }
+    mappings
+}
+
 fn main() {
     let cli = cli::Cli::parse();
     let config_file = match cli.config.as_deref() {
@@ -24,8 +45,7 @@ fn main() {
         }
         Some(config_path) => {
             println!("Setting config to :{}", config_path.display());
-            let config_file = config_path;
-            config_file
+            config_path
         }
     };
 
@@ -45,21 +65,25 @@ fn main() {
         },
         Some(cli::Commands::List {}) => {
             let components = mental_config.list_components();
-            println!("Existing components: {:?}",&components)
-        },
-        None => {},
+            println!("Existing components:");
+            for c in components{
+                println!("  {}", &c)
+            }
+        }
+        Some(cli::Commands::Map {}) => {
+           let mappings : Vec<Mapping> = create_mapping(config_file, &mental_config);
+           for m in mappings {
+                let config_env: Vec<String> =
+                    mental_config.to_env(m.components);
+                println!("Resulting env variables for folder: {:?}",&m.path);
+                for env_entry in config_env {
+                    println!("{}", env_entry);
+                }
+           }
+        }
+        None => {}
         _ => {}
     }
 
-
-    // test implementations
-    let ans = match cli::folder_multiselect(config_file) {
-        Ok(selection) => selection,
-        Err(error) => panic!("Problem opening the file: {:?}", error),
-    };
-    println!("{:?}", ans);
-
-    let config_env: Vec<String> = mental_config.to_env(vec!["postgres".to_string(), "test".to_string()]);
-    println!("{:?}", &config_env);
 
 }

@@ -4,13 +4,7 @@ use std::{fs, io};
 
 pub(crate) fn folders(path: &Path) -> Result<Vec<PathBuf>, io::Error> {
     Ok(fs::read_dir(path)?
-        .filter_map(|entry| {
-            Some(entry.ok()?
-                .path()
-                .strip_prefix(path)
-                .ok()?
-                .to_path_buf())
-        })
+        .filter_map(|entry| Some(entry.ok()?.path().strip_prefix(path).ok()?.to_path_buf()))
         .filter(|path| path.is_dir())
         .collect())
 }

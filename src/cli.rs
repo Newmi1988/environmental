@@ -1,9 +1,11 @@
-use crate::util;
+use crate::{util, config::MentalConfig};
 use inquire::error::InquireResult;
 use inquire::MultiSelect;
+use std::path::{Path, PathBuf};
+use clap::{Parser, Subcommand};
 
-fn format_multiline_list(options: Vec<String>, message: String) -> InquireResult<Vec<String>> {
-    let ans = MultiSelect::new(&message, options).prompt();
+fn format_multiline_list(options: Vec<String>, message: &str) -> InquireResult<Vec<String>> {
+    let ans = MultiSelect::new(message, options).prompt();
     ans
 }
 
@@ -15,13 +17,18 @@ pub(crate) fn folder_multiselect(config_file_path: &Path) -> InquireResult<Vec<S
         .collect();
     format_multiline_list(
         folders_as_string,
-        "Select folders:".to_string(),
+        "Select folders:",
     )
 }
 
-use std::path::{Path, PathBuf};
+pub(crate) fn module_multiselect(mental_config : &MentalConfig) -> InquireResult<Vec<String>> {
+    let components = mental_config.list_components();
+    format_multiline_list(
+        components,
+        "Select components that shoudl be included in folder",
+    )
+}
 
-use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]

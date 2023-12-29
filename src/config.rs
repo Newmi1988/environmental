@@ -41,10 +41,10 @@ impl MentalConfig {
         Ok(())
     }
 
-    pub(crate) fn list_components(&self) -> Vec<&String> {
-        let mut res: Vec<&String> = Vec::new();
+    pub(crate) fn list_components(&self) -> Vec<String> {
+        let mut res: Vec<String> = Vec::new();
         for c in &self.components {
-            res.push(&c.name)
+            res.push(c.name.clone())
         }
         res
     }
