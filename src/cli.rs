@@ -9,8 +9,8 @@ fn format_multiline_list(options: Vec<String>, message: &str) -> InquireResult<V
     ans
 }
 
-pub(crate) fn folder_multiselect(config_file_path: &Path) -> InquireResult<Vec<String>> {
-    let options = util::list_folders(config_file_path);
+pub(crate) fn folder_multiselect(folder_path: &Path) -> InquireResult<Vec<String>> {
+    let options = util::list_folders(folder_path);
     let folders_as_string: Vec<String> = options
         .into_iter()
         .filter_map(|f| f.into_os_string().into_string().ok())
@@ -55,7 +55,7 @@ pub(crate) enum Commands {
     },
     /// Map components to targets
     Map {
-
+        target: Option<PathBuf>
     },
     /// Dump Schema
     Schema {

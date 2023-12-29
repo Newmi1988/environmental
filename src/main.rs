@@ -15,8 +15,8 @@ struct Mapping {
     components: Vec<String>,
 }
 
-fn create_mapping(config_file: &Path, mental_config : &MentalConfig) -> Vec<Mapping> {
-    let selected_folders = match cli::folder_multiselect(config_file) {
+fn create_mapping(path: &Path, mental_config : &MentalConfig) -> Vec<Mapping> {
+    let selected_folders = match cli::folder_multiselect(path) {
         Ok(selection) => selection,
         Err(error) => panic!("Problem opening the file: {:?}", error),
     };
@@ -70,8 +70,18 @@ fn main() {
                 println!("  {}", &c)
             }
         }
-        Some(cli::Commands::Map {}) => {
-           let mappings : Vec<Mapping> = create_mapping(config_file, &mental_config);
+        Some(cli::Commands::Map { target }) => {
+           let target_path = match target {
+                None => {
+                    match config_file.parent() {
+                       Some(parent) => parent,
+                       None => panic!("Could not resolve folder")
+                    }
+                },
+                Some(target_folder) => target_folder
+           };
+           println!("Target path {:?}", &target_path);
+           let mappings : Vec<Mapping> = create_mapping(target_path, &mental_config);
            for m in mappings {
                 let config_env: Vec<String> =
                     mental_config.to_env(m.components);
