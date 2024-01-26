@@ -1,46 +1,13 @@
 use crate::config::MentalConfig;
 use clap::Parser;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use mapping::Mapping;
 
 mod cli;
 mod components;
 mod config;
 mod util;
-
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
-struct Mapping {
-    path: PathBuf,
-    components: Vec<String>,
-}
-
-fn create_mapping(path: &Path, mental_config: &MentalConfig) -> Vec<Mapping> {
-    let selected_folders = match cli::folder_multiselect(path) {
-        Ok(selection) => selection,
-        Err(error) => panic!("Problem opening the file: {:?}", error),
-    };
-    println!("Selected folders {:?}", selected_folders);
-
-    let mut mappings: Vec<Mapping> = Vec::new();
-    for f in selected_folders {
-        let message = format!(
-            "Select components that shoudl be included in forlder '{}'. Components: ",
-            f
-        );
-        let selected_components = match cli::module_multiselect(mental_config, &message) {
-            Ok(selection) => selection,
-            Err(error) => panic!("Problem opening the file: {:?}", error),
-        };
-        let mut pathbuff = PathBuf::new();
-        pathbuff.push(f);
-        mappings.push(Mapping {
-            path: pathbuff,
-            components: selected_components.clone(),
-        });
-    }
-    mappings
-}
+mod mapping;
 
 fn main() {
     let cli = cli::Cli::parse();
@@ -84,7 +51,7 @@ fn main() {
                 },
                 Some(target_folder) => target_folder,
             };
-            let mappings: Vec<Mapping> = create_mapping(target_path, &mental_config);
+            let mappings: Vec<Mapping> = mapping::create_mapping(target_path, &mental_config);
             mental_config.mappings = mappings;
             println!("{:?}", mental_config);
             mental_config

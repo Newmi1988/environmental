@@ -1,5 +1,5 @@
 use crate::components::Component;
-use crate::Mapping;
+use crate::mapping::Mapping;
 use schemars::{schema_for, JsonSchema};
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
@@ -13,6 +13,7 @@ use std::path::{Path, PathBuf};
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MentalConfig {
     components: Vec<Component>,
+    // TODO: move mapping to different file e.g mental.map
     pub mappings: Vec<Mapping>,
 }
 
@@ -66,8 +67,8 @@ impl MentalConfig {
                 for env_entry in &target_config_env {
                     println!("  {}", env_entry);
                 }
-                let formated_path = format!("{}{}", &m.path.display(), "/.env");
-                let target_path = PathBuf::from(formated_path);
+                let formatted_path = format!("{}{}", &m.path.display(), "/.env");
+                let target_path = PathBuf::from(formatted_path);
                 fs::write(target_path, target_config_env.join("\n"))?;
             }
         }
