@@ -1,12 +1,11 @@
-use crate::{config::MentalConfig, util};
+use crate::util;
 use clap::{Parser, Subcommand};
 use inquire::error::InquireResult;
 use inquire::MultiSelect;
 use std::path::{Path, PathBuf};
 
 fn format_multiline_list(options: Vec<String>, message: &str) -> InquireResult<Vec<String>> {
-    let ans = MultiSelect::new(message, options).prompt();
-    ans
+    MultiSelect::new(message, options).prompt()
 }
 
 pub(crate) fn folder_multiselect(folder_path: &Path) -> InquireResult<Vec<String>> {
@@ -19,10 +18,9 @@ pub(crate) fn folder_multiselect(folder_path: &Path) -> InquireResult<Vec<String
 }
 
 pub(crate) fn module_multiselect(
-    mental_config: &MentalConfig,
+    components: Vec<String>,
     message: &str,
 ) -> InquireResult<Vec<String>> {
-    let components = mental_config.list_components();
     format_multiline_list(components, message)
 }
 
@@ -41,7 +39,10 @@ pub(crate) struct Cli {
 #[derive(Subcommand)]
 pub(crate) enum Commands {
     /// Sync to config to files
-    Apply { target: Option<PathBuf> },
+    Apply {
+        mapping: PathBuf,
+        target: Option<PathBuf>,
+    },
     /// Map components to targets
     Map { target: Option<PathBuf> },
     /// Dump Schema

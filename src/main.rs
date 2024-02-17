@@ -1,13 +1,12 @@
-use crate::config::MentalConfig;
+use crate::{config::MentalConfig, mapping::MentalMapping};
 use clap::Parser;
-use std::path::Path;
-use mapping::Mapping;
+use std::path::{Path, PathBuf};
 
 mod cli;
 mod components;
 mod config;
-mod util;
 mod mapping;
+mod util;
 
 fn main() {
     let cli = cli::Cli::parse();
@@ -23,7 +22,7 @@ fn main() {
     };
 
     // load the config
-    let mut mental_config = match config::MentalConfig::from_file(&config_file) {
+    let mental_config = match config::MentalConfig::from_file(&config_file) {
         Ok(config) => config,
         Err(error) => panic!("Problem opening the file: {:?}", error),
     };
@@ -51,21 +50,31 @@ fn main() {
                 },
                 Some(target_folder) => target_folder,
             };
-            let mappings: Vec<Mapping> = mapping::create_mapping(target_path, &mental_config);
-            mental_config.mappings = mappings;
-            println!("{:?}", mental_config);
-            mental_config
-                .dump(&config_file.to_path_buf())
-                .expect("Error writing config")
+            let mappings: MentalMapping =
+                MentalMapping::new(target_path, mental_config.list_components());
+
+            let mapping_name: String =
+                match inquire::Text::new("Plase select a name for the mapping").prompt() {
+                    Ok(name) => format!("./{}.map", name),
+                    Err(_) => panic!("Not a valid name"),
+                };
+
+            let mut mapping_file = PathBuf::new();
+            mapping_file.push(mapping_name);
+            mappings.dump(&mapping_file).expect("Error writing config")
         }
-        Some(cli::Commands::Apply { target }) => {
+        Some(cli::Commands::Apply { mapping, target }) => {
+            let loaded_mapping = match MentalMapping::from_file(&mapping.as_path()) {
+                Ok(m) => m,
+                Err(error) => panic!("Problem opening the file: {:?}", error),
+            };
             let target_paths = match target {
-                None => mental_config.list_mapping_targets(),
+                None => loaded_mapping.list_targets(),
                 Some(target_folder) => vec![target_folder.to_owned()],
             };
 
-            mental_config
-                .write_components_to_folder(target_paths)
+            loaded_mapping
+                .apply(&mental_config, target_paths)
                 .expect("Error")
         }
         None => {}
