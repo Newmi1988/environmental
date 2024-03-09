@@ -35,13 +35,18 @@ fn main() {
                 MentalConfig::create_schema(target).expect("Error writing file");
             }
         },
-        Some(cli::Commands::List {}) => {
-            let components = mental_config.list_components();
-            println!("Existing components:");
-            for c in components {
-                println!("  {}", &c)
+        Some(cli::Commands::Component { component }) => match component {
+            cli::Component::List {} => {
+                let components = mental_config.list_components();
+                println!("Existing components:");
+                for c in components {
+                    println!("  {}", &c)
+                }
             }
-        }
+            cli::Component::Create {} => {
+                println!("Creating component")
+            }
+        },
         Some(cli::Commands::Map { target }) => {
             let target_path = match target {
                 None => match config_file.parent() {

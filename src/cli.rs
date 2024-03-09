@@ -52,5 +52,14 @@ pub(crate) enum Commands {
         target: Option<PathBuf>,
     },
     /// List components
+    Component {
+        #[command(subcommand)]
+        component: Component,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+pub(crate) enum Component {
     List {},
+    Create {},
 }
