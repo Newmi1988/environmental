@@ -52,4 +52,24 @@ impl MentalConfig {
         let config: MentalConfig = from_str(&config_input)?;
         Ok(config)
     }
+
+    fn create_component(
+        mut self,
+        name: String,
+        values: Vec<(String, String)>,
+    ) -> Result<(), Box<dyn Error>> {
+        self.components.push(Component::new(name, None, values));
+        Ok(())
+    }
+
+    fn create_component_with_prefix(
+        mut self,
+        name: String,
+        prefix: String,
+        values: Vec<(String, String)>,
+    ) -> Result<(), Box<dyn Error>> {
+        self.components
+            .push(Component::new(name, Some(prefix), values));
+        Ok(())
+    }
 }

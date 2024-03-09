@@ -35,4 +35,20 @@ impl Component {
         }
         formatted_values
     }
+
+    pub(crate) fn new(
+        name: String,
+        prefix: Option<String>,
+        values: Vec<(String, String)>,
+    ) -> Component {
+        let mut given_key_values: Vec<KeyValue> = Vec::new();
+        for (key, value) in values {
+            given_key_values.push(KeyValue { name: key, value })
+        }
+        Component {
+            name,
+            prefix,
+            values: given_key_values,
+        }
+    }
 }
