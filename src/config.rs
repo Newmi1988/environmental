@@ -53,7 +53,7 @@ impl MentalConfig {
         Ok(config)
     }
 
-    fn create_component(
+    pub fn create_component(
         mut self,
         name: String,
         values: Vec<(String, String)>,
@@ -62,7 +62,7 @@ impl MentalConfig {
         Ok(())
     }
 
-    fn create_component_with_prefix(
+    pub fn create_component_with_prefix(
         mut self,
         name: String,
         prefix: String,

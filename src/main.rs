@@ -43,8 +43,41 @@ fn main() {
                     println!("  {}", &c)
                 }
             }
-            cli::Component::Create {} => {
-                println!("Creating component")
+            cli::Component::Create {
+                name,
+                prefix,
+                keys,
+                values,
+            } => {
+                println!("Creating component");
+
+                let mut key_values: Vec<(String, String)> = Vec::new();
+                let key_value_iterator = keys.iter().zip(values.iter());
+
+                for (key, value) in key_value_iterator {
+                    key_values.push((key.to_owned(), value.to_owned()))
+                }
+
+                match prefix {
+                    Some(prefix) => {
+                        match mental_config.create_component_with_prefix(
+                            name.to_owned(),
+                            prefix.to_owned(),
+                            key_values,
+                        ) {
+                            Ok(_) => {
+                                println!("Created component with prefix")
+                            }
+                            Err(_) => panic!("Error creating component"),
+                        }
+                    }
+                    None => match mental_config.create_component(name.to_owned(), key_values) {
+                        Ok(_) => {
+                            println!("Created component")
+                        }
+                        Err(_) => panic!("Error creating component"),
+                    },
+                }
             }
         },
         Some(cli::Commands::Map { target }) => {

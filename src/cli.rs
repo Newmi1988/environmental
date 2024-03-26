@@ -61,5 +61,17 @@ pub(crate) enum Commands {
 #[derive(Subcommand, Debug)]
 pub(crate) enum Component {
     List {},
-    Create {},
+    Create {
+        #[arg(short, long, value_name = "name")]
+        name: String,
+
+        #[arg(short, long, value_name = "prefix")]
+        prefix: Option<String>,
+
+        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
+        keys: Vec<String>,
+
+        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
+        values: Vec<String>,
+    },
 }
