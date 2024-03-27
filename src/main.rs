@@ -1,6 +1,7 @@
 use crate::{config::MentalConfig, mapping::MentalMapping};
 use clap::Parser;
 use std::path::{Path, PathBuf};
+use mapping::FileIO;
 
 mod cli;
 mod components;
@@ -51,10 +52,11 @@ fn main() {
             } => {
                 println!("Creating component");
 
+                if keys.len() == values.len() {
+                    panic!("Number of keys and values is equal.")
+                }
                 let mut key_values: Vec<(String, String)> = Vec::new();
-                let key_value_iterator = keys.iter().zip(values.iter());
-
-                for (key, value) in key_value_iterator {
+                for (key, value) in keys.iter().zip(values.iter()) {
                     key_values.push((key.to_owned(), value.to_owned()))
                 }
 

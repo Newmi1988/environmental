@@ -21,6 +21,27 @@ pub struct MentalMapping {
     pub mappings: Vec<Mapping>,
 }
 
+pub trait FileIO: serde::Serialize {
+    fn dump(&self, target: &PathBuf) -> std::io::Result<()> {
+        let mut file = File::create(target)?;
+        let struct_as_string = serde_yaml::to_string(self).expect("Error writing config");
+        file.write_all(struct_as_string.as_bytes())?;
+        Ok(())
+    }
+
+    fn from_file(struct_file: &&Path) -> Result<Self, Box<dyn Error>>
+    where
+        Self: Sized,
+        for<'a> Self: Deserialize<'a>,
+    {
+        let struct_input = read_to_string(struct_file)?;
+        let deserialized_struct: Self = from_str(&struct_input)?;
+        Ok(deserialized_struct)
+    }
+}
+
+impl FileIO for MentalMapping {}
+
 impl MentalMapping {
     pub fn new(path: &Path, components: Vec<String>) -> MentalMapping {
         let selected_folders = match cli::folder_multiselect(path) {
@@ -75,18 +96,5 @@ impl MentalMapping {
             res.push(m.path.clone())
         }
         res
-    }
-
-    pub(crate) fn dump(&self, target: &PathBuf) -> std::io::Result<()> {
-        let mut file = File::create(target)?;
-        let config_as_string = serde_yaml::to_string(self).expect("Error writing config");
-        file.write_all(config_as_string.as_bytes())?;
-        Ok(())
-    }
-
-    pub fn from_file(mental_mapping_file: &&Path) -> Result<MentalMapping, Box<dyn Error>> {
-        let mapping_input = read_to_string(mental_mapping_file)?;
-        let mapping: MentalMapping = from_str(&mapping_input)?;
-        Ok(mapping)
     }
 }
