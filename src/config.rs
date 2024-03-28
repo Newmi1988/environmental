@@ -61,6 +61,7 @@ impl MentalConfig {
         name: String,
         values: Vec<(String, String)>,
     ) -> Result<Self, Box<dyn Error>> {
+        // TODO: Check if the component is already present to prevent duplicated components
         self.components.push(Component::new(name, None, values));
         Ok(self)
     }
@@ -71,6 +72,7 @@ impl MentalConfig {
         prefix: String,
         values: Vec<(String, String)>,
     ) -> Result<Self, Box<dyn Error>> {
+        // TODO: Check if the component is already present to prevent duplicated components
         self.components
             .push(Component::new(name, Some(prefix), values));
         Ok(self)
