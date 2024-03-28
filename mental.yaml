@@ -11,8 +11,17 @@ components:
   values:
   - name: VALUE_ONE
     value: ONE
-mappings:
-- path: .
-  components:
-  - postgres
-  - test
+- name: test2
+  prefix: pre
+  values:
+  - name: keyone
+    value: one
+  - name: keytwo
+    value: two
+- name: test2
+  prefix: pre
+  values:
+  - name: keyone
+    value: one
+  - name: keytwo
+    value: two

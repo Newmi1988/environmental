@@ -1,4 +1,5 @@
 use crate::components::Component;
+use crate::mapping::FileIO;
 use schemars::{schema_for, JsonSchema};
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
@@ -12,6 +13,8 @@ use std::path::{Path, PathBuf};
 pub struct MentalConfig {
     components: Vec<Component>,
 }
+
+impl FileIO for MentalConfig {}
 
 impl MentalConfig {
     pub(crate) fn to_env(&self, component_keys: &[String]) -> Vec<String> {
@@ -57,9 +60,9 @@ impl MentalConfig {
         mut self,
         name: String,
         values: Vec<(String, String)>,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<Self, Box<dyn Error>> {
         self.components.push(Component::new(name, None, values));
-        Ok(())
+        Ok(self)
     }
 
     pub fn create_component_with_prefix(
@@ -67,9 +70,9 @@ impl MentalConfig {
         name: String,
         prefix: String,
         values: Vec<(String, String)>,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<Self, Box<dyn Error>> {
         self.components
             .push(Component::new(name, Some(prefix), values));
-        Ok(())
+        Ok(self)
     }
 }

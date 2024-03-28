@@ -52,8 +52,8 @@ fn main() {
             } => {
                 println!("Creating component");
 
-                if keys.len() == values.len() {
-                    panic!("Number of keys and values is equal.")
+                if keys.len() != values.len() {
+                    panic!("Number of keys and values is not equal.")
                 }
                 let mut key_values: Vec<(String, String)> = Vec::new();
                 for (key, value) in keys.iter().zip(values.iter()) {
@@ -67,19 +67,23 @@ fn main() {
                             prefix.to_owned(),
                             key_values,
                         ) {
-                            Ok(_) => {
-                                println!("Created component with prefix")
+                            Ok(config) => {
+                                println!("Created component with prefix");
+                                config.dump(&config_file.to_path_buf()).expect("Error writing config");
                             }
                             Err(_) => panic!("Error creating component"),
                         }
                     }
-                    None => match mental_config.create_component(name.to_owned(), key_values) {
-                        Ok(_) => {
-                            println!("Created component")
+                    None => {
+                        match mental_config.create_component(name.to_owned(), key_values) {
+                            Ok(config) => {
+                                println!("Created component");
+                                config.dump(&config_file.to_path_buf()).expect("Error writing config");
+                            }
+                            Err(_) => panic!("Error creating component"),
                         }
-                        Err(_) => panic!("Error creating component"),
-                    },
-                }
+                    }
+                };
             }
         },
         Some(cli::Commands::Map { target }) => {
