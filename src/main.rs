@@ -52,6 +52,10 @@ fn main() {
             } => {
                 println!("Creating component");
 
+                if keys.len() == 0 && values.len() == 0 {
+                    panic!("No keys and values given. Aborting creation of component")
+                }
+
                 if keys.len() != values.len() {
                     panic!("Number of keys and values is not equal.")
                 }
