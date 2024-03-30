@@ -52,5 +52,33 @@ pub(crate) enum Commands {
         target: Option<PathBuf>,
     },
     /// List components
+    Component {
+        #[command(subcommand)]
+        component: Component,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+pub(crate) enum Component {
+    /// List existing components
     List {},
+
+    /// Create a new component
+    Create {
+        /// Name of the component
+        #[arg(value_name = "name")]
+        name: String,
+
+        /// optional prefix
+        #[arg(value_name = "prefix")]
+        prefix: Option<String>,
+
+        /// keys, seperated by whitespace
+        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
+        keys: Vec<String>,
+
+        /// values, seperated by whitespace
+        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
+        values: Vec<String>,
+    },
 }
