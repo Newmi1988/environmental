@@ -1,7 +1,7 @@
 use crate::{config::MentalConfig, mapping::MentalMapping};
 use clap::Parser;
-use std::path::{Path, PathBuf};
 use mapping::FileIO;
+use std::path::{Path, PathBuf};
 
 mod cli;
 mod components;
@@ -69,20 +69,22 @@ fn main() {
                         ) {
                             Ok(config) => {
                                 println!("Created component with prefix");
-                                config.dump(&config_file.to_path_buf()).expect("Error writing config");
+                                config
+                                    .dump(&config_file.to_path_buf())
+                                    .expect("Error writing config");
                             }
-                            Err(_) => panic!("Error creating component"),
+                            Err(err) => panic!("Error creating component {}", err),
                         }
                     }
-                    None => {
-                        match mental_config.create_component(name.to_owned(), key_values) {
-                            Ok(config) => {
-                                println!("Created component");
-                                config.dump(&config_file.to_path_buf()).expect("Error writing config");
-                            }
-                            Err(_) => panic!("Error creating component"),
+                    None => match mental_config.create_component(name.to_owned(), key_values) {
+                        Ok(config) => {
+                            println!("Created component");
+                            config
+                                .dump(&config_file.to_path_buf())
+                                .expect("Error writing config");
                         }
-                    }
+                        Err(err) => panic!("Error creating component {}", err),
+                    },
                 };
             }
         },

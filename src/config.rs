@@ -4,6 +4,7 @@ use schemars::{schema_for, JsonSchema};
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
 use std::error::Error;
+use std::fmt;
 use std::fs::read_to_string;
 use std::fs::File;
 use std::io::Write;
@@ -15,6 +16,17 @@ pub struct MentalConfig {
 }
 
 impl FileIO for MentalConfig {}
+
+#[derive(Debug, Clone)]
+struct ConfigError(String);
+
+impl fmt::Display for ConfigError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Invalid config option: {}", self.0)
+    }
+}
+
+impl Error for ConfigError {}
 
 impl MentalConfig {
     pub(crate) fn to_env(&self, component_keys: &[String]) -> Vec<String> {
@@ -56,14 +68,26 @@ impl MentalConfig {
         Ok(config)
     }
 
+    pub fn name_exists(&self, name: &String) -> bool {
+        for comp in &self.components {
+            if name == &comp.name {
+                return true;
+            }
+        }
+        false
+    }
+
     pub fn create_component(
         mut self,
         name: String,
         values: Vec<(String, String)>,
     ) -> Result<Self, Box<dyn Error>> {
-        // TODO: Check if the component is already present to prevent duplicated components
-        self.components.push(Component::new(name, None, values));
-        Ok(self)
+        if self.name_exists(&name) {
+            Err(Box::new(ConfigError("Name already exists".into())))
+        } else {
+            self.components.push(Component::new(name, None, values));
+            Ok(self)
+        }
     }
 
     pub fn create_component_with_prefix(
@@ -72,9 +96,12 @@ impl MentalConfig {
         prefix: String,
         values: Vec<(String, String)>,
     ) -> Result<Self, Box<dyn Error>> {
-        // TODO: Check if the component is already present to prevent duplicated components
-        self.components
-            .push(Component::new(name, Some(prefix), values));
-        Ok(self)
+        if self.name_exists(&name) {
+            Err(Box::new(ConfigError("Name already exists".into())))
+        } else {
+            self.components
+                .push(Component::new(name, Some(prefix), values));
+            Ok(self)
+        }
     }
 }

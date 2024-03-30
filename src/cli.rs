@@ -70,7 +70,7 @@ pub(crate) enum Component {
         name: String,
 
         /// optional prefix
-        #[arg(short, long, value_name = "prefix")]
+        #[arg(value_name = "prefix")]
         prefix: Option<String>,
 
         /// keys, seperated by whitespace
