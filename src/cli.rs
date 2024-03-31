@@ -4,7 +4,10 @@ use inquire::error::InquireResult;
 use inquire::MultiSelect;
 use std::path::{Path, PathBuf};
 
-fn format_multiline_list(options: Vec<String>, message: &str) -> InquireResult<Vec<String>> {
+pub(crate) fn format_multiline_list(
+    options: Vec<String>,
+    message: &str,
+) -> InquireResult<Vec<String>> {
     MultiSelect::new(message, options).prompt()
 }
 
@@ -93,4 +96,7 @@ pub(crate) enum Component {
         #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
         values: Vec<String>,
     },
+
+    /// Create a component from current environment
+    FromEnv {},
 }

@@ -98,6 +98,49 @@ fn main() {
                     },
                 };
             }
+            &cli::Component::FromEnv {} => {
+                use std::env;
+
+                // We will iterate through the references to the element returned by
+                // env::vars();
+                let mut env_variables: Vec<String> = Vec::new();
+                for (key, value) in env::vars() {
+                    env_variables.push(format!("{key}: {value}"));
+                }
+
+                let selected_env_key_values = match cli::format_multiline_list(
+                    env_variables,
+                    "Select variables you want to import",
+                ) {
+                    Ok(selection) => selection,
+                    Err(error) => panic!("Problem opening the file: {:?}", error),
+                };
+
+                let mut key_values: Vec<(String, String)> = Vec::new();
+                println!("Selected variables");
+                for e in selected_env_key_values {
+                    let key_value_split = e.split(": ");
+                    let parts: Vec<&str> = key_value_split.collect();
+                    let key = parts.first().unwrap().to_string();
+                    let value = parts.last().unwrap().to_string();
+                    println!("{}:{}", &key, &value);
+                    key_values.push((key, value));
+                }
+                let component_name: String =
+                    match inquire::Text::new("Please select a name for the component").prompt() {
+                        Ok(name) => name,
+                        Err(_) => panic!("Not a valid name"),
+                    };
+                match mental_config.create_component(component_name, key_values) {
+                    Ok(config) => {
+                        println!("Created component");
+                        config
+                            .dump(&config_file.to_path_buf())
+                            .expect("Error writing config");
+                    }
+                    Err(err) => panic!("Error creating component {}", err),
+                }
+            }
         },
         Some(cli::Commands::Map { target }) => {
             let target_path = match target {
