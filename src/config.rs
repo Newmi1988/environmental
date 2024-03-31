@@ -10,6 +10,9 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+/// Config Struct
+///
+/// * `components`: collection of components
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MentalConfig {
     components: Vec<Component>,
@@ -17,10 +20,14 @@ pub struct MentalConfig {
 
 impl FileIO for MentalConfig {}
 
+/// Custom error used with config
 #[derive(Debug, Clone)]
 struct ConfigError(String);
 
 impl fmt::Display for ConfigError {
+    /// Format the custom error
+    ///
+    /// * `f`: formatter
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Invalid config option: {}", self.0)
     }
@@ -29,6 +36,9 @@ impl fmt::Display for ConfigError {
 impl Error for ConfigError {}
 
 impl MentalConfig {
+    /// Serialize data into .env format
+    ///
+    /// * `component_keys`: slice of component keys
     pub(crate) fn to_env(&self, component_keys: &[String]) -> Vec<String> {
         let filtered_components: Vec<&Component> = self
             .components
@@ -46,6 +56,9 @@ impl MentalConfig {
         combined_values
     }
 
+    /// Dump a json schema for validation
+    ///
+    /// * `target`: filepath to save the schema into
     pub(crate) fn create_schema(target: &PathBuf) -> std::io::Result<()> {
         let schema = schema_for!(MentalConfig);
         let formatted_schema = serde_json::to_string(&schema).expect("Error creating schema");
@@ -54,6 +67,7 @@ impl MentalConfig {
         Ok(())
     }
 
+    /// List names of all defined components
     pub(crate) fn list_components(&self) -> Vec<String> {
         let mut res: Vec<String> = Vec::new();
         for c in &self.components {
@@ -62,12 +76,18 @@ impl MentalConfig {
         res
     }
 
+    /// Load config from file
+    ///
+    /// * `config_file`: path to load the config from
     pub fn from_file(config_file: &&Path) -> Result<MentalConfig, Box<dyn Error>> {
         let config_input = read_to_string(config_file)?;
         let config: MentalConfig = from_str(&config_input)?;
         Ok(config)
     }
 
+    /// Check if a component with a given name exists
+    ///
+    /// * `name`: name to search for
     pub fn name_exists(&self, name: &String) -> bool {
         for comp in &self.components {
             if name == &comp.name {
@@ -77,6 +97,10 @@ impl MentalConfig {
         false
     }
 
+    /// Create a new component
+    ///
+    /// * `name`: name of the component
+    /// * `values`: values of the component
     pub fn create_component(
         mut self,
         name: String,
@@ -90,6 +114,11 @@ impl MentalConfig {
         }
     }
 
+    /// Create a new component
+    ///
+    /// * `name`: name of the component
+    /// * `prefix`: prefix to prefix the variables with
+    /// * `values`: values of the component
     pub fn create_component_with_prefix(
         mut self,
         name: String,

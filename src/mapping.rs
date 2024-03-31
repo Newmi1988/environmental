@@ -1,3 +1,5 @@
+//! Mappings from component to path
+
 use crate::cli;
 use crate::config::MentalConfig;
 use schemars::JsonSchema;
@@ -10,20 +12,20 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 /// Mapping from components to path
 ///
 /// * `path`: target path the variables are mapped into
 /// * `components`: the components that should be mapped
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct Mapping {
     pub(crate) path: PathBuf,
     pub(crate) components: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 /// Collection of mappings
 ///
 /// * `mappings`: collection of mappings
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MentalMapping {
     pub mappings: Vec<Mapping>,
 }
@@ -57,6 +59,10 @@ pub trait FileIO: serde::Serialize {
 impl FileIO for MentalMapping {}
 
 impl MentalMapping {
+    /// Create a new mapping searching for targets in a path
+    ///
+    /// * `path`: path to search
+    /// * `components`: collection of components
     pub fn new(path: &Path, components: Vec<String>) -> MentalMapping {
         let selected_folders = match cli::folder_multiselect(path) {
             Ok(selection) => selection,
@@ -84,6 +90,11 @@ impl MentalMapping {
         MentalMapping { mappings }
     }
 
+    /// Apply previous generated mapping
+    ///
+    /// * `config`: deserialized config
+    /// * `targets`: targets to apply the env mapping to
+    /// * `to_stdout`: only print to stdout instead of file
     pub(crate) fn apply(
         &self,
         config: &MentalConfig,
@@ -107,6 +118,7 @@ impl MentalMapping {
         Ok(())
     }
 
+    /// List the targets for a mapping
     pub(crate) fn list_targets(&self) -> Vec<PathBuf> {
         let mut res: Vec<PathBuf> = Vec::new();
         for m in &self.mappings {

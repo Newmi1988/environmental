@@ -9,6 +9,7 @@ mod config;
 mod mapping;
 mod util;
 
+/// Main function of the cli
 fn main() {
     let cli = cli::Cli::parse();
     let config_file = match cli.config.as_deref() {
