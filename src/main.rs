@@ -113,7 +113,7 @@ fn main() {
             mapping_file.push(mapping_name);
             mappings.dump(&mapping_file).expect("Error writing config")
         }
-        Some(cli::Commands::Apply { mapping, target }) => {
+        Some(cli::Commands::Apply { mapping, target, stdout}) => {
             let loaded_mapping = match MentalMapping::from_file(&mapping.as_path()) {
                 Ok(m) => m,
                 Err(error) => panic!("Problem opening the file: {:?}", error),
@@ -124,7 +124,7 @@ fn main() {
             };
 
             loaded_mapping
-                .apply(&mental_config, target_paths)
+                .apply(&mental_config, target_paths, stdout)
                 .expect("Error")
         }
         None => {}

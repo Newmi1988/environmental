@@ -41,7 +41,12 @@ pub(crate) enum Commands {
     /// Sync to config to files
     Apply {
         mapping: PathBuf,
+
         target: Option<PathBuf>,
+
+        /// only print to stdout
+        #[arg(short,long, action)]
+        stdout: bool,
     },
     /// Map components to targets
     Map { target: Option<PathBuf> },

@@ -74,17 +74,20 @@ impl MentalMapping {
         &self,
         config: &MentalConfig,
         targets: Vec<PathBuf>,
+        to_stdout: &bool,
     ) -> std::io::Result<()> {
         for m in &self.mappings {
             if targets.contains(&m.path) {
                 let target_config_env = config.to_env(&m.components);
-                println!("Resulting env variables for folder: {:?}", &m.path);
-                for env_entry in &target_config_env {
-                    println!("  {}", env_entry);
+                if *to_stdout {
+                    for env_entry in &target_config_env {
+                        println!("  {}", env_entry);
+                    }
+                } else {
+                    let formatted_path = format!("{}{}", &m.path.display(), "/.env");
+                    let target_path = PathBuf::from(formatted_path);
+                    fs::write(target_path, target_config_env.join("\n"))?;
                 }
-                let formatted_path = format!("{}{}", &m.path.display(), "/.env");
-                let target_path = PathBuf::from(formatted_path);
-                fs::write(target_path, target_config_env.join("\n"))?;
             }
         }
         Ok(())
