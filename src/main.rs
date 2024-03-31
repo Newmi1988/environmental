@@ -101,8 +101,6 @@ fn main() {
             &cli::Component::FromEnv {} => {
                 use std::env;
 
-                // We will iterate through the references to the element returned by
-                // env::vars();
                 let mut env_variables: Vec<String> = Vec::new();
                 for (key, value) in env::vars() {
                     env_variables.push(format!("{key}: {value}"));
@@ -118,9 +116,10 @@ fn main() {
 
                 let mut key_values: Vec<(String, String)> = Vec::new();
                 println!("Selected variables");
-                for e in selected_env_key_values {
-                    let key_value_split = e.split(": ");
+                for key_value in selected_env_key_values {
+                    let key_value_split = key_value.split(": ");
                     let parts: Vec<&str> = key_value_split.collect();
+                    // unwrapping should be fine here we always should have two values
                     let key = parts.first().unwrap().to_string();
                     let value = parts.last().unwrap().to_string();
                     println!("{}:{}", &key, &value);
