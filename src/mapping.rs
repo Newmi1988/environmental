@@ -81,7 +81,7 @@ impl MentalMapping {
                 let target_config_env = config.to_env(&m.components);
                 if *to_stdout {
                     for env_entry in &target_config_env {
-                        println!("  {}", env_entry);
+                        println!("{}", env_entry);
                     }
                 } else {
                     let formatted_path = format!("{}{}", &m.path.display(), "/.env");

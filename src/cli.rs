@@ -45,7 +45,7 @@ pub(crate) enum Commands {
         target: Option<PathBuf>,
 
         /// only print to stdout
-        #[arg(short,long, action)]
+        #[arg(short, long, action)]
         stdout: bool,
     },
     /// Map components to targets
@@ -67,6 +67,13 @@ pub(crate) enum Commands {
 pub(crate) enum Component {
     /// List existing components
     List {},
+
+    /// Show a component
+    Show {
+        /// Components to show (whitespace sperated)
+        #[clap(value_parser, num_args =1.., value_delimiter = ' ')]
+        names: Vec<String>,
+    },
 
     /// Create a new component
     Create {
