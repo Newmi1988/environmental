@@ -44,6 +44,12 @@ fn main() {
                     println!("  {}", &c)
                 }
             }
+            cli::Component::Show { names } => {
+                let components = mental_config.to_env(names);
+                for env_entry in components {
+                    println!("{}", env_entry);
+                }
+            }
             cli::Component::Create {
                 name,
                 prefix,
@@ -113,7 +119,11 @@ fn main() {
             mapping_file.push(mapping_name);
             mappings.dump(&mapping_file).expect("Error writing config")
         }
-        Some(cli::Commands::Apply { mapping, target, stdout}) => {
+        Some(cli::Commands::Apply {
+            mapping,
+            target,
+            stdout,
+        }) => {
             let loaded_mapping = match MentalMapping::from_file(&mapping.as_path()) {
                 Ok(m) => m,
                 Err(error) => panic!("Problem opening the file: {:?}", error),
