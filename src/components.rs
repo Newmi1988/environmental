@@ -49,7 +49,7 @@ impl Component {
         formatted_values
     }
 
-    /// Craate a component
+    /// Create a component
     ///
     /// * `name`: name of the component
     /// * `prefix`: prefix of the component

@@ -30,7 +30,7 @@ pub struct MentalMapping {
     pub mappings: Vec<Mapping>,
 }
 
-/// trait for handling that handles Serialization and Deserialiation of structs
+/// trait for handling that handles Serialization and Deserialization of structs
 pub trait FileIO: serde::Serialize {
     /// Dump the struct into a file
     ///
@@ -73,17 +73,17 @@ impl MentalMapping {
         let mut mappings: Vec<Mapping> = Vec::new();
         for f in selected_folders {
             let message = format!(
-                "Select components that shoudl be included in forlder '{}'. Components: ",
+                "Select components that should be included in folder '{}'. Components: ",
                 f
             );
             let selected_components = match cli::module_multiselect(components.clone(), &message) {
                 Ok(selection) => selection,
                 Err(error) => panic!("Problem opening the file: {:?}", error),
             };
-            let mut pathbuff = PathBuf::new();
-            pathbuff.push(f);
+            let mut path_buffer = PathBuf::new();
+            path_buffer.push(f);
             mappings.push(Mapping {
-                path: pathbuff,
+                path: path_buffer,
                 components: selected_components.clone(),
             });
         }
