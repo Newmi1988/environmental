@@ -52,7 +52,7 @@ fn main() {
             } => {
                 println!("Creating component");
 
-                if keys.len() == 0 && values.len() == 0 {
+                if keys.is_empty() && values.is_empty() {
                     panic!("No keys and values given. Aborting creation of component")
                 }
 
