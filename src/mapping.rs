@@ -11,17 +11,28 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
+/// Mapping from components to path
+///
+/// * `path`: target path the variables are mapped into
+/// * `components`: the components that should be mapped
 pub struct Mapping {
     pub(crate) path: PathBuf,
     pub(crate) components: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
+/// Collection of mappings
+///
+/// * `mappings`: collection of mappings
 pub struct MentalMapping {
     pub mappings: Vec<Mapping>,
 }
 
+/// trait for handling that handles Serialization and Deserialiation of structs
 pub trait FileIO: serde::Serialize {
+    /// Dump the struct into a file
+    ///
+    /// * `target`: target file to write into
     fn dump(&self, target: &PathBuf) -> std::io::Result<()> {
         let mut file = File::create(target)?;
         let struct_as_string = serde_yaml::to_string(self).expect("Error writing config");
@@ -29,6 +40,9 @@ pub trait FileIO: serde::Serialize {
         Ok(())
     }
 
+    /// Load the given struct from a file
+    ///
+    /// * `struct_file`: file that contains the struct in a serialized format
     fn from_file(struct_file: &&Path) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized,
