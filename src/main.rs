@@ -9,6 +9,7 @@ mod config;
 mod mapping;
 mod util;
 
+/// Main function of the cli
 fn main() {
     let cli = cli::Cli::parse();
     let config_file = match cli.config.as_deref() {
@@ -23,7 +24,7 @@ fn main() {
     };
 
     // load the config
-    let mental_config = match config::MentalConfig::from_file(&config_file) {
+    let mental_config = match MentalConfig::from_file(&config_file) {
         Ok(config) => config,
         Err(error) => panic!("Problem opening the file: {:?}", error),
     };
@@ -110,7 +111,7 @@ fn main() {
                 MentalMapping::new(target_path, mental_config.list_components());
 
             let mapping_name: String =
-                match inquire::Text::new("Plase select a name for the mapping").prompt() {
+                match inquire::Text::new("Please select a name for the mapping").prompt() {
                     Ok(name) => format!("./{}.map", name),
                     Err(_) => panic!("Not a valid name"),
                 };
