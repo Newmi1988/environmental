@@ -114,6 +114,10 @@ fn main() {
                     Err(error) => panic!("Problem opening the file: {:?}", error),
                 };
 
+                if selected_env_key_values.is_empty() {
+                    panic!("No component selected");
+                }
+
                 let mut key_values: Vec<(String, String)> = Vec::new();
                 println!("Selected variables");
                 for key_value in selected_env_key_values {
