@@ -3,7 +3,7 @@ components:
   prefix: POSTGRES
   values:
   - name: PORT
-    value: '5333'
+    value: 5333
   - name: SCHEME
     value: TEST
 - name: test

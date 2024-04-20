@@ -1,5 +1,4 @@
 use crate::components::Component;
-use crate::components::StringOrInt;
 use crate::mapping::FileIO;
 use schemars::{schema_for, JsonSchema};
 use serde::{Deserialize, Serialize};

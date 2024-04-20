@@ -4,16 +4,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize,JsonSchema)]
+#[serde(untagged)]
 pub enum StringOrInt {
+    Integer(u32),
     String(String),
-    Integer(u32)
 }
 
-impl std::fmt::Display for StringOrInt {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f,"{}",self)
-    }
-}
 
 /// Struct holding the key and values
 ///
@@ -28,7 +24,15 @@ struct KeyValue {
 impl KeyValue {
     /// Format the key value to .env format
     fn to_env(&self) -> String {
-        format!(r#"{0}="{1}""#, self.name, self.value)
+        match &self.value {
+            StringOrInt::String(v) => {
+                format!(r#"{0}="{1}""#, self.name, v.to_owned())
+            },
+            StringOrInt::Integer(v) => {
+                let value_as_string = v.to_string();
+                format!(r#"{0}={1}"#, self.name, value_as_string)
+            }
+        }
     }
 }
 
