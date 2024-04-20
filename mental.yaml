@@ -25,3 +25,15 @@ components:
     value: one
   - name: keytwo
     value: two
+- name: test3
+  prefix: pre
+  values:
+  - name: keyone
+    value: one
+  - name: keytwo
+    value: two
+- name: test4
+  prefix: pre
+  values:
+  - name: keyone
+    value: '1'

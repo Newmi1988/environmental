@@ -3,6 +3,18 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Deserialize, Serialize,JsonSchema)]
+pub enum StringOrInt {
+    String(String),
+    Integer(u32)
+}
+
+impl std::fmt::Display for StringOrInt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f,"{}",self)
+    }
+}
+
 /// Struct holding the key and values
 ///
 /// * `name`: name of the value
@@ -10,7 +22,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 struct KeyValue {
     name: String,
-    value: String,
+    value: StringOrInt,
 }
 
 impl KeyValue {
@@ -61,7 +73,11 @@ impl Component {
     ) -> Component {
         let mut given_key_values: Vec<KeyValue> = Vec::new();
         for (key, value) in values {
-            given_key_values.push(KeyValue { name: key, value })
+            let parsed_value : StringOrInt = match value.parse::<u32>() {
+                Ok(v) => StringOrInt::Integer(v),
+                Err(v) => StringOrInt::String(v.to_string())
+            };
+            given_key_values.push(KeyValue { name: key, value: parsed_value })
         }
         Component {
             name,
