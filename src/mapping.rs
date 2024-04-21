@@ -5,7 +5,6 @@ use crate::config::MentalConfig;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
-use std::error::Error;
 use std::fs;
 use std::fs::read_to_string;
 use std::fs::File;
@@ -37,7 +36,7 @@ pub trait FileIO: serde::Serialize {
     /// * `target`: target file to write into
     fn dump(&self, target: &PathBuf) -> std::io::Result<()> {
         let mut file = File::create(target)?;
-        let struct_as_string = serde_yaml::to_string(self).expect("Error writing config");
+        let struct_as_string = serde_yaml::to_string(self).unwrap();
         file.write_all(struct_as_string.as_bytes())?;
         Ok(())
     }
@@ -45,7 +44,7 @@ pub trait FileIO: serde::Serialize {
     /// Load the given struct from a file
     ///
     /// * `struct_file`: file that contains the struct in a serialized format
-    fn from_file(struct_file: &&Path) -> Result<Self, Box<dyn Error>>
+    fn from_file(struct_file: &&Path) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized,
         for<'a> Self: Deserialize<'a>,

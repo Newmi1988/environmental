@@ -71,10 +71,10 @@ pub(crate) enum Component {
     /// List existing components
     List {},
 
-    /// Show a component
+    /// Print components
     Show {
         /// Components to show (whitespace sperated)
-        #[clap(value_parser, num_args =1.., value_delimiter = ' ')]
+        #[clap(value_parser, num_args =1.., value_delimiter = ' ', required=true)]
         names: Vec<String>,
     },
 
@@ -89,11 +89,11 @@ pub(crate) enum Component {
         prefix: Option<String>,
 
         /// keys, seperated by whitespace
-        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
+        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ', required=true)]
         keys: Vec<String>,
 
         /// values, seperated by whitespace
-        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
+        #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ', required=true)]
         values: Vec<String>,
     },
 

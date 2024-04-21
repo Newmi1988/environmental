@@ -3,6 +3,13 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(untagged)]
+pub enum StringOrInt {
+    Integer(u32),
+    String(String),
+}
+
 /// Struct holding the key and values
 ///
 /// * `name`: name of the value
@@ -10,13 +17,21 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 struct KeyValue {
     name: String,
-    value: String,
+    value: StringOrInt,
 }
 
 impl KeyValue {
     /// Format the key value to .env format
     fn to_env(&self) -> String {
-        format!(r#"{0}="{1}""#, self.name, self.value)
+        match &self.value {
+            StringOrInt::String(v) => {
+                format!(r#"{0}="{1}""#, self.name, v.to_owned())
+            }
+            StringOrInt::Integer(v) => {
+                let value_as_string = v.to_string();
+                format!(r#"{0}={1}"#, self.name, value_as_string)
+            }
+        }
     }
 }
 
@@ -61,7 +76,14 @@ impl Component {
     ) -> Component {
         let mut given_key_values: Vec<KeyValue> = Vec::new();
         for (key, value) in values {
-            given_key_values.push(KeyValue { name: key, value })
+            let parsed_value: StringOrInt = match value.parse::<u32>() {
+                Ok(v) => StringOrInt::Integer(v),
+                Err(v) => StringOrInt::String(v.to_string()),
+            };
+            given_key_values.push(KeyValue {
+                name: key,
+                value: parsed_value,
+            })
         }
         Component {
             name,
